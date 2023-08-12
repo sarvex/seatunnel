@@ -24,7 +24,7 @@ if sys.version_info.major < 3:
     print('Please refer to the https://www.python.org/downloads/ documentation if you do not have a right Python env.')
     exit(-1)
 
-if len(sys.argv) - 1 != 3:
+if len(sys.argv) != 4:
     print("The length of arguments should be 3!")
     print("The first argument should be the path to the THIRD-PARTY.txt file.")
     print("The second argument should be the path to the LICENSE file.")
@@ -133,8 +133,8 @@ for _ in licenses:
         continue
     type = items[0]
     l = None
-    for k in licenses_keyword_map:
-        for keyword in licenses_keyword_map[k]:
+    for k, v_ in licenses_keyword_map.items():
+        for keyword in v_:
             if keyword in type:
                 l = k
                 break
@@ -148,8 +148,9 @@ if len(licenses_map["Other License"]) != 0:
     print("Please confirm the license by finding LICENSE file in the corresponding Jar file and maintain it in the dependency_licenses_map instance.")
     exit(-1)
 
-res = ""
-res += """                                 Apache License
+res = (
+    ""
+    + """                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -362,7 +363,7 @@ licenses.
 
 
 """
-
+)
 for k, v in licenses_map.items():
     if len(v) == 0:
         continue
@@ -379,14 +380,14 @@ for k, v in licenses_map.items():
     res += '\n\n'
 
 if print_diff == 'true':
-    tmp_file = third_party + ".tmp"
+    tmp_file = f"{third_party}.tmp"
     with open(tmp_file, "w") as f:
         f.write(res)
     print("Please modify the LICENSE file according to the diff information.")
     if platform.system() == "Windows":
-        diff_res = os.system("FC " + license + " " + tmp_file)
+        diff_res = os.system(f"FC {license} {tmp_file}")
     else:
-        diff_res = os.system("diff " + license + " " + tmp_file)
+        diff_res = os.system(f"diff {license} {tmp_file}")
     if int(diff_res) != 0:
         print("Failed.")
         exit(-1)

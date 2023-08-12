@@ -48,30 +48,30 @@ def get_modules(files, index, start_pre, root_module):
             modules_name_set.add(names[index + 1])
 
     output_module = ""
-    if len(modules_name_set) > 0:
+    if modules_name_set:
         for module in modules_name_set:
-            output_module = output_module + "," + module
+            output_module = f"{output_module},{module}"
 
     else:
-        output_module = output_module + "," + root_module
+        output_module = f"{output_module},{root_module}"
 
     print(output_module)
 
 
 def replace_comma_to_commacolon(modules_str):
     modules_str = modules_str.replace(",", ",:")
-    modules_str = ":" + modules_str
+    modules_str = f":{modules_str}"
     print(modules_str)
 
 
 def get_sub_modules(file):
     output = ""
     with open(file, 'r', encoding='utf-8') as f:
-        for line in f.readlines():
+        for line in f:
             line = line.replace(" ", "")
             if line.startswith("<string>"):
                 line = line.replace(" ", "").replace("<string>", "").replace("</string>", "").replace("\n", "")
-                output = output + "," + line
+                output = f"{output},{line}"
     print(output)
 
 
@@ -79,37 +79,37 @@ def get_dependency_tree_includes(modules_str):
     modules = modules_str.split(',')
     output = ""
     for module in modules:
-        output = ",org.apache.seatunnel:" + module + output
+        output = f",org.apache.seatunnel:{module}{output}"
 
-    output = output[1:len(output)]
-    output = "-Dincludes=" + output
+    output = output[1:]
+    output = f"-Dincludes={output}"
     print(output)
 
 
 def get_final_it_modules(file):
     output = ""
     with open(file, 'r', encoding='utf-8') as f:
-        for line in f.readlines():
+        for line in f:
             if line.startswith("org.apache.seatunnel"):
                 con = line.split(":")
                 # find all e2e modules
                 if con[2] == "jar" and "-e2e" in con[1] and "transform" not in con[1]:
-                    output = output + "," + ":" + con[1]
-    output = output[1:len(output)]
+                    output = f"{output},:{con[1]}"
+    output = output[1:]
     print(output)
 
 
 def get_final_ut_modules(file):
     output = ""
     with open(file, 'r', encoding='utf-8') as f:
-        for line in f.readlines():
+        for line in f:
             if line.startswith("org.apache.seatunnel"):
                 con = line.split(":")
                 # find all e2e modules
                 if con[2] == "jar":
-                    output = output + "," + ":" + con[1]
+                    output = f"{output},:{con[1]}"
 
-    output = output[1:len(output)]
+    output = output[1:]
     print(output)
 
 
@@ -119,9 +119,9 @@ def remove_deleted_modules(pl_modules, deleted_modules):
     output = ""
     for module in pl_modules_arr:
         if deleted_modules_arr.count(module) == 0:
-            output = output + ",:" + module
+            output = f"{output},:{module}"
 
-    output = output[1:len(output)]
+    output = output[1:]
     print(output)
 
 
@@ -133,11 +133,11 @@ def get_deleted_modules(files):
         module_name = names[len(names) - 2]
         modules_name_set.add(module_name)
     output_module = ""
-    if len(modules_name_set) > 0:
+    if modules_name_set:
         for module in modules_name_set:
-            output_module = output_module + "," + module
+            output_module = f"{output_module},{module}"
 
-    output_module = output_module[1:len(output_module)]
+    output_module = output_module[1:]
     print(output_module)
 
 
@@ -149,21 +149,22 @@ def get_sub_it_modules(modules, total_num, current_num):
     output = ""
     for i, module in enumerate(modules_arr):
         if len(module) > 0 and i % int(total_num) == int(current_num):
-            output = output + ",:" + module
+            output = f"{output},:{module}"
 
-    output = output[1:len(output)]
+    output = output[1:]
     print(output)
 
 
 def get_sub_update_it_modules(modules, total_num, current_num):
-    final_modules = list()
     # :connector-jdbc-e2e-common,:connector-jdbc-e2e-part-1 --> connector-jdbc-e2e-common,:connector-jdbc-e2e-part-1
     modules = modules[1:]
     # connector-jdbc-e2e-common,:connector-jdbc-e2e-part-1 --> [connector-jdbc-e2e-common, connector-jdbc-e2e-part-1]
     module_list = modules.split(",:")
-    for i, module in enumerate(module_list):
-        if len(module) > 0 and i % int(total_num) == int(current_num):
-            final_modules.append(":" + module)
+    final_modules = [
+        f":{module}"
+        for i, module in enumerate(module_list)
+        if len(module) > 0 and i % int(total_num) == int(current_num)
+    ]
     print(",".join(final_modules))
 
 
