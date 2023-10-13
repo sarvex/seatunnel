@@ -2,7 +2,7 @@
 
 <img src="https://seatunnel.apache.org/image/logo.png" alt="seatunnel logo" height="200px" align="right" />
 
-[![Backend Workflow](https://github.com/apache/seatunnel/actions/workflows/backend.yml/badge.svg?branch=dev)](https://github.com/apache/seatunnel/actions/workflows/backend.yml)
+[![Build Workflow](https://github.com/apache/seatunnel/actions/workflows/build_main.yml/badge.svg?branch=dev)](https://github.com/apache/seatunnel/actions/workflows/build_main.yml)
 [![Slack](https://img.shields.io/badge/slack-%23seatunnel-4f8eba?logo=slack)](https://s.apache.org/seatunnel-slack)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ASFSeaTunnel.svg?label=Follow&logo=twitter)](https://twitter.com/ASFSeaTunnel)
 
@@ -126,7 +126,7 @@ Please follow this [document](docs/en/contribution/setup.md).
 
 * Mail list: **dev@seatunnel.apache.org**. Mail to `dev-subscribe@seatunnel.apache.org`, follow the reply to subscribe
   the mail list.
-* Slack: https://the-asf.slack.com/archives/C053HND1D6X
+* Slack: https://s.apache.org/seatunnel-slack
 * Twitter: https://twitter.com/ASFSeaTunnel
 * [Bilibili](https://space.bilibili.com/1542095008) (for Chinese users)
 

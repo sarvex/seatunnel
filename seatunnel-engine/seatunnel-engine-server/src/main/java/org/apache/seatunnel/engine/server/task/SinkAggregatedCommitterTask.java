@@ -114,6 +114,7 @@ public class SinkAggregatedCommitterTask<CommandInfoT, AggregatedCommitInfoT>
         this.commitInfoSerializer = sink.getSink().getCommitInfoSerializer().get();
         this.aggregatedCommitInfoSerializer =
                 sink.getSink().getAggregatedCommitInfoSerializer().get();
+        aggregatedCommitter.init();
         log.debug(
                 "starting seatunnel sink aggregated committer task, sink name[{}] ",
                 sink.getName());
@@ -132,7 +133,6 @@ public class SinkAggregatedCommitterTask<CommandInfoT, AggregatedCommitInfoT>
         return progress.toState();
     }
 
-    @SuppressWarnings("checkstyle:MagicNumber")
     protected void stateProcess() throws Exception {
         switch (currState) {
             case INIT:
@@ -263,7 +263,12 @@ public class SinkAggregatedCommitterTask<CommandInfoT, AggregatedCommitInfoT>
                                                         aggregatedCommitInfoSerializer.deserialize(
                                                                 bytes)))
                         .collect(Collectors.toList());
-        aggregatedCommitter.commit(aggregatedCommitInfos);
+        List<AggregatedCommitInfoT> commit =
+                aggregatedCommitter.restoreCommit(aggregatedCommitInfos);
+        if (CollectionUtils.isNotEmpty(commit)) {
+            log.error("aggregated committer error: {}", commit.size());
+            throw new CheckpointException(CheckpointCloseReason.AGGREGATE_COMMIT_ERROR);
+        }
         restoreComplete.complete(null);
         log.debug("restoreState for sink agg committer [{}] finished", actionStateList);
     }
